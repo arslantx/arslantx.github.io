@@ -1,1903 +1,463 @@
+<!DOCTYPE HTML>
+<!--
+	Strata by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
 <html>
-
-<head>
-    <meta name="author" content="Arslan Haytiyev">
-    <meta charset="utf-8" />
-    <meta name="robots" content="noindex" />
-    <meta http-equiv="cache-control" content="no-cache" />
-    <title>Timesheet App</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <script src="js/jquery-3.1.1.min.js"></script>
-
-    <!-- Time entry plugin -->
-    <link rel="stylesheet" href="css/jquery.timeentry.css">
-    <script src="js/jquery.plugin.min.js"></script>
-    <script src="js/jquery.timeentry.js"></script>
-    <script>
-        $(function () {
-            $('.timecard').timeEntry({ ampmPrefix: ' ' });
-            $('.timecard').timeEntry({ spinnerImage: '' });
-            /*    $('.timecard').timeEntry({defaultTime: '00:00AM'}); */
-        });
-    </script>
-
-
-    <!-- Function to show / hide 3rd week and clear values when period is changed -->
-    <script>
-        $(window).on('load', function () {
-            var PeriodSelector = jQuery('#PeriodSelector');
-            PeriodSelector.change(function () {
-                for (j = 10; j <= 30; j++) {
-                    $("#in_1_" + j).val("");
-                    $("#out_1_" + j).val("");
-                    $("#in_2_" + j).val("");
-                    $("#out_2_" + j).val("");
-                    $("#total_d" + j).empty("");
-                    $("#break_d" + j).empty("");
-                    $("#total_w1").empty("");
-                    $("#total_w2").empty("");
-                    $("#total_w3").empty("");
-                    $("#overtime_w1").empty("");
-                    $("#overtime_w2").empty("");
-                    $("#overtime_w3").empty("");
-                    $("#total_regular").empty("");
-                    $("#total_overtime").empty("");
-                }
-
-                if ($(this).val() == 'period4' || $(this).val() == 'period9' || $(this).val() == 'period15' || $(this).val() == 'period21' || $(this).val() == 'period24') {
-                    $('#week3').fadeIn(1000);
-                }
-
-                else { $('#week3').fadeOut(1000); }
-            });
-        });
-    </script>
-
-
-    <script>
-        /* Function to limit scheduled work hours between 0 and 120
-        var scheduledhour = 0;
-        function scheduledhourlimiter() {
-            scheduledhour = 0;
-            do {
-                scheduledhour = parseInt(window.prompt("What's your scheduled work hours for this period? Interns enter 0.", ""), 10);
-            } while (isNaN(scheduledhour) || scheduledhour > 120 || scheduledhour < 0);
- 
-            $('#scheduledhours').val(scheduledhour);
-            calculate();
-        }
-        */
-
-
-        // Function to fill out week days
-        $(window).on('load', function () {
-            var x = jQuery('#PeriodSelector');
-            x.change(function () {
-                if ($(this).val() == 'period1') {
-                    $('#submitdate1').html("08/11/2018"); $('#submitdate2').html("08/14/2018"); filldays("2018-7-30");
-                }
-                if ($(this).val() == 'period2') {
-                    $('#submitdate1').html("08/25/2018"); $('#submitdate2').html("08/28/2018"); filldays("2018-8-13");
-                }
-                if ($(this).val() == 'period3') {
-                    $('#submitdate1').html("09/08/2018"); $('#submitdate2').html("09/11/2018"); filldays("2018-8-27");
-                }
-                if ($(this).val() == 'period4') {
-                    $('#submitdate1').html("09/29/2018"); $('#submitdate2').html("10/02/2018"); filldays("2018-9-10");
-                }
-                if ($(this).val() == 'period5') {
-                    $('#submitdate1').html("10/13/2018"); $('#submitdate2').html("10/16/2018"); filldays("2018-10-1");
-                }
-                if ($(this).val() == 'period6') {
-                    $('#submitdate1').html("10/27/2018"); $('#submitdate2').html("10/30/2018"); filldays("2018-10-15");
-                }
-                if ($(this).val() == 'period7') {
-                    $('#submitdate1').html("11/10/2018"); $('#submitdate2').html("11/13/2018"); filldays("2018-10-29");
-                }
-                if ($(this).val() == 'period8') {
-                    $('#submitdate1').html("11/24/2018"); $('#submitdate2').html("11/27/2018"); filldays("2018-11-12");
-                }
-                if ($(this).val() == 'period9') {
-                    $('#submitdate1').html("12/15/2018"); $('#submitdate2').html("12/18/2018"); filldays("2018-11-26");
-                }
-                if ($(this).val() == 'period10') {
-                    $('#submitdate1').html("12/29/2018"); $('#submitdate2').html("01/03/2019"); filldays("2018-12-17");
-                }
-                if ($(this).val() == 'period11') {
-                    $('#submitdate1').html("01/12/2019"); $('#submitdate2').html("01/15/2019"); filldays("2018-12-31");
-                }
-                if ($(this).val() == 'period12') {
-                    $('#submitdate1').html("01/26/2019"); $('#submitdate2').html("01/29/2019"); filldays("2019-1-14");
-                }
-                if ($(this).val() == 'period13') {
-                    $('#submitdate1').html("02/09/2019"); $('#submitdate2').html("02/12/2019"); filldays("2019-1-28");
-                }
-                if ($(this).val() == 'period14') {
-                    $('#submitdate1').html("02/23/2019"); $('#submitdate2').html("02/26/2019"); filldays("2019-2-11");
-                }
-                if ($(this).val() == 'period15') {
-                    $('#submitdate1').html("03/16/2019"); $('#submitdate2').html("03/19/2019"); filldays("2019-2-25");
-                }
-                if ($(this).val() == 'period16') {
-                    $('#submitdate1').html("03/30/2019"); $('#submitdate2').html("04/02/2019"); filldays("2019-3-18");
-                }
-                if ($(this).val() == 'period17') {
-                    $('#submitdate1').html("04/13/2019"); $('#submitdate2').html("04/16/2019"); filldays("2019-4-1");
-                }
-                if ($(this).val() == 'period18') {
-                    $('#submitdate1').html("04/27/2019"); $('#submitdate2').html("04/30/2019"); filldays("2019-4-15");
-                }
-                if ($(this).val() == 'period19') {
-                    $('#submitdate1').html("05/11/2019"); $('#submitdate2').html("05/14/2019"); filldays("2019-4-29");
-                }
-                if ($(this).val() == 'period20') {
-                    $('#submitdate1').html("05/25/2019"); $('#submitdate2').html("05/28/2019"); filldays("2019-5-13");
-                }
-                if ($(this).val() == 'period21') {
-                    $('#submitdate1').html("06/15/2019"); $('#submitdate2').html("06/18/2019"); filldays("2019-5-27");
-                }
-                if ($(this).val() == 'period22') {
-                    $('#submitdate1').html("06/29/2019"); $('#submitdate2').html("07/02/2019"); filldays("2019-6-17");
-                }
-                if ($(this).val() == 'period23') {
-                    $('#submitdate1').html("07/13/2019"); $('#submitdate2').html("07/16/2019"); filldays("2019-7-1");
-                }
-                if ($(this).val() == 'period24') {
-                    $('#submitdate1').html("07/31/2019"); $('#submitdate2').html("08/02/2019"); filldays("2019-7-15");
-                }
-                calculate();
-                $('.holidayWarning').show();
-                $('#regularHoursDefLabel').show();
-            });
-            function filldays(sent_date) {
-
-                $(".checkboxes").show();
-
-                var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                var dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
-                var wd = 0;
-                var md = 0;
-                var month_of_date = 0;
-                var year_of_date = 0;
-
-                for (k = 0; k < 21; k++) {
-                    var d = new Date(sent_date.replace(/-/g, '\/').replace(/T.+/, ''));  //If .replace not added, JS gives returns one previous day for new Date
-
-                    d.setDate(d.getDate() + k);
-
-                    wd = d.getDay();
-                    md = d.getDate();
-
-
-                    month_of_date = d.getMonth();
-                    year_of_date = d.getFullYear();
-
-                    $("#day" + k).html(dayNames[wd] + ", " + monthNames[month_of_date] + " " + md + ", " + year_of_date);
-                    $("#holiday" + k).prop('checked', false);
-                    $("#asterisk" + k).hide();
-                } //Iteration ends here
-
-                // Hide July 31st, 2018 and August 1,2,3,4,5 - 2019
-                if (jQuery('#PeriodSelector').val() == "period1") {
-                    $("#day0").html("");
-                    $("#holiday0").hide();
-                    $("#day1").html("");
-                    $("#holiday1").hide();
-                }
-                else if (jQuery('#PeriodSelector').val() == "period24") {
-                    $("#day17").html("");
-                    $("#day18").html("");
-                    $("#day19").html("");
-                    $("#day20").html("");
-                    $("#holiday17").hide();
-                    $("#holiday18").hide();
-                    $("#holiday19").hide();
-                    $("#holiday20").hide();
-                }
-            };
-        });
-
-
-        // Function to print asterisk next to selected days (holidays and non work days)
-        function addAsteriskToDate(dayNumber) {
-            var holiday_status = document.getElementById('holiday' + dayNumber).checked;
-
-            if (holiday_status) { $("#asterisk" + dayNumber).show(); }
-            else { $("#asterisk" + dayNumber).hide(); }
-
-            calculate();
-
-        };
-
-
-        // Function to control cell width for rotated text
-        $(document).ready(function () {
-            $('.rotate').css('height', $('.rotate').width());
-            $('.checkboxes').hide();
-            $('.timeentry-control').hide();
-            $('.holidayWarning').hide();
-            $('#regularHoursDefLabel').hide();
-        })
-
-
-        var check_break = 0;
-        var check_day = "";
-        var check_daily_total = 0;
-        // Function to check campus, name and position fields also errors before printing
-        function check_before_print() {
-
-            // Check for negative break
-            check_break = 0;
-            check_day = "";
-            for (i = 10; i < 31; i++) {
-                check_break = parseFloat($("#break_d" + i).text());
-                check_day = $("#day" + (i - 10)).text().slice(0, -6);
-                if (check_break != NaN && check_break < 0) {
-                    alert("You made a mistake on " + check_day + " entry. Click ok to correct it.");
-                    $("#out_1_" + i).focus();
-                    return;
-                }
-            }
-
-            // Check for negative daily time total
-            check_daily_total = 0;
-            for (i = 10; i < 31; i++) {
-                check_daily_total = parseFloat($("#total_d" + i).text());
-                check_day = $("#day" + (i - 10)).text().slice(0, -6);
-                if (check_daily_total != NaN && check_daily_total < 0) {
-                    alert("You made a mistake on " + check_day + " entry. Click ok to correct it.");
-                    $("#in_1_" + i).focus();
-                    return;
-                }
-            }
-
-            // Check if name, position and campus fields are filled
-            var name_field = jQuery('#fullname').val();
-            var position_field = jQuery('#position').val();
-            var campus_field = jQuery('#CampusSelector').val();
-
-            if (name_field && position_field != "Choose Position" && campus_field != "Choose Campus") {
-                window.print();
-            } else {
-                if (name_field && campus_field != "Choose Campus") {
-                    alert("Please choose your job title before printing");
-                    $('#position').focus();
-                }
-                else {
-                    if (position_field != "Choose Position" && campus_field != "Choose Campus") {
-                        alert("Please type your full name before printing");
-                        $('#fullname').focus();
-                    } else {
-                        if (campus_field != "Choose Campus") {
-                            alert("Please type your full name and choose job title before printing");
-                            $('#fullname').focus();
-                        }
-                        else {
-                            if (campus_field == "Choose Campus" && name_field && position_field != "Choose Position") {
-                                alert("Please choose your campus before printing");
-                                $('#CampusSelector').focus();
-                            }
-                            else {
-                                alert("Please choose your campus, position and type your name before printing");
-                                $('#CampusSelector').focus();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Function to check if any day has more than 10 hours of work
-        function checkTooMuchHour() {
-            check_day = "";
-            check_daily_total = 0;
-            for (i = 10; i < 31; i++) {
-                check_daily_total = parseFloat($("#total_d" + i).text());
-                check_day = $("#day" + (i - 10)).text().slice(0, -6);
-                if (check_daily_total != NaN && check_daily_total >= 10) {
-                    var toomuchHour = confirm(check_day + " shows " + check_daily_total + " hours of work. Click Cancel if you want to go back and check for a possible mistake. Or click OK to continue with printing.");
-                    if (toomuchHour) {
-                        window.print();
-                    }
-                    else {
-                        $("#in_1_" + i).focus();
-                        return;
-                    }
-                }
-                else {
-                    window.print();
-                }
-            }
-        }
-
-        // Function to hide Scheduled, Unscheduled, Absence hours if position is Intern
-        function checkIntern() {
-            var position_chosen = jQuery('#position').val();
-            if (position_chosen == "Intern") {
-                $('#scheduledhours').hide();
-                $('#unscheduledhours').hide();
-                $('#absence').hide();
-            }
-            else {
-                $('#scheduledhours').show();
-                $('#unscheduledhours').show();
-                $('#absence').show();
-            }
-        }
-
-
-        // Function to do calculations
-        function calculate() {
-            //var row=field.id;
-
-            /* Check if the pay period is chosen */
-            var Period_chosen = jQuery('#PeriodSelector');
-            var campus_chosen = jQuery('#CampusSelector');
-
-            if (Period_chosen.val() == 'period0') {
-                alert("Please choose the pay period before entering time");
-                $('#PeriodSelector').focus();
-            }
-
-
-            var i = 10;
-            var weekly_total = 0;
-            var weekly_total_ot = 0;
-            var overall_total_reg = 0;
-            var overall_total_ot = 0;
-            var week_1_reg = 0;
-            var week_2_reg = 0;
-            var week_3_reg = 0;
-            var week_1_ot = 0;
-            var week_2_ot = 0;
-            var week_3_ot = 0;
-            var holiday_total_hours = 0;
-            var interimVar = 0;
-
-            var daily_scheduled = 8;
-            var week_1_scheduled = 0;
-            var week_2_scheduled = 0;
-            var week_3_scheduled = 0;
-            var week_1_unscheduled = 0;
-            var week_2_unscheduled = 0;
-            var week_3_unscheduled = 0;
-            var overall_total_scheduled = 0;
-            var overall_total_unscheduled = 0;
-
-            var week_1_absence = 0;
-            var week_2_absence = 0;
-            var week_3_absence = 0;
-            var overall_total_absence = 0;
-            var week_1_decimalAbsence = 0;
-            var week_2_decimalAbsence = 0;
-            var week_3_decimalAbsence = 0;
-
-
-            for (i = 10; i < 31; i++) {
-
-                var time_in_1 = $("#in_1_" + i).val();
-                var time_out_1 = $("#out_1_" + i).val();
-                var time_in_2 = $("#in_2_" + i).val();
-                var time_out_2 = $("#out_2_" + i).val();
-
-                var hh_in_1 = Number(time_in_1.substr(0, 2));
-                var mm_in_1 = Number(time_in_1.substr(3, 2));
-                var ampm_in_1 = time_in_1.substr(6, 2);
-
-                var hh_out_1 = Number(time_out_1.substr(0, 2));
-                var mm_out_1 = Number(time_out_1.substr(3, 2));
-                var ampm_out_1 = time_out_1.substr(6, 2);
-
-                var hh_in_2 = Number(time_in_2.substr(0, 2));
-                var mm_in_2 = Number(time_in_2.substr(3, 2));
-                var ampm_in_2 = time_in_2.substr(6, 2);
-
-                var hh_out_2 = Number(time_out_2.substr(0, 2));
-                var mm_out_2 = Number(time_out_2.substr(3, 2));
-                var ampm_out_2 = time_out_2.substr(6, 2);
-
-
-
-                if (ampm_in_1 == "AM") {
-                    if (hh_in_1 == 12)
-                        hh_in_1 = 0;
-                }
-                if (ampm_in_1 == "PM") {
-                    if (hh_in_1 != 12)
-                        hh_in_1 = hh_in_1 + 12;
-                }
-
-
-                if (ampm_out_1 == "AM") {
-                    if (hh_out_1 == 12)
-                        hh_out_1 = 0;
-                }
-                if (ampm_out_1 == "PM") {
-                    if (hh_out_1 != 12)
-                        hh_out_1 = hh_out_1 + 12;
-                }
-
-
-                if (ampm_in_2 == "AM") {
-                    if (hh_in_2 == 12)
-                        hh_in_2 = 0;
-                }
-                if (ampm_in_2 == "PM") {
-                    if (hh_in_2 != 12)
-                        hh_in_2 = hh_in_2 + 12;
-                }
-
-
-                if (ampm_out_2 == "AM") {
-                    if (hh_out_2 == 12)
-                        hh_out_2 = 0;
-                }
-                if (ampm_out_2 == "PM") {
-                    if (hh_out_2 != 12)
-                        hh_out_2 = hh_out_2 + 12;
-                }
-
-
-
-                time_in_1 = new Date(2011, 0, 1, hh_in_1, mm_in_1, 0);
-                time_out_1 = new Date(2011, 0, 1, hh_out_1, mm_out_1, 0);
-                time_in_2 = new Date(2011, 0, 1, hh_in_2, mm_in_2, 0);
-                time_out_2 = new Date(2011, 0, 1, hh_out_2, mm_out_2, 0);
-
-                var time_diff = 0;
-                var break_diff;
-
-                if (ampm_in_1 && ampm_out_1 && ampm_in_2 && ampm_out_2) { time_diff = ((time_out_2 - time_in_2) + (time_out_1 - time_in_1)) / 1000; }
-                else {
-                    if (ampm_in_1 && ampm_out_1 && ampm_in_2) { time_diff = 0; }
-                    else {
-                        if (ampm_in_1 && ampm_out_1 && ampm_out_2) { time_diff = 0; }
-                        else {
-                            if (ampm_in_1 && ampm_in_2 && ampm_out_2) { time_diff = 0; }
-                            else {
-                                if (ampm_out_1 && ampm_in_2 && ampm_out_2) { time_diff = 0; }
-                                else {
-                                    if (ampm_in_1 && ampm_out_1) { time_diff = (time_out_1 - time_in_1) / 1000; }
-                                    else {
-                                        if (ampm_in_1 && ampm_out_2) { time_diff = (time_out_2 - time_in_1) / 1000; }
-                                        else {
-                                            if (ampm_in_2 && ampm_out_2) { time_diff = (time_out_2 - time_in_2) / 1000; }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Break calculation
-                if (ampm_out_1 && ampm_in_2) {
-                    break_diff = (time_in_2 - time_out_1) / 1000;
-                    var break_diff_hours = Math.floor(break_diff / 3600);
-                    var break_diff_minutes = Math.floor((break_diff - (break_diff_hours * 3600)) / 60);
-                    var break_diff_decimal = break_diff / 3600;
-                    break_diff_decimal = Math.round(break_diff_decimal * 100) / 100;
-
-                    // Activate this to display break in hours and minutes
-                    /*
-                    if (break_diff_hours < 10) { break_diff_hours = "0" + break_diff_hours; }
-                    if (break_diff_minutes < 10) { break_diff_minutes = "0" + break_diff_minutes; }
-                    jQuery("#break_d" + i).html(break_diff_hours + ":" + break_diff_minutes);
-                    */
-                    jQuery("#break_d" + i).html(break_diff_decimal.toFixed(2));
-                }
-                else {
-                    jQuery("#break_d" + i).html(" ");
-                }
-
-                // Daily total hours calculation
-                var time_diff_hours = Math.floor(time_diff / 3600);
-                var time_diff_minutes = Math.floor((time_diff - (time_diff_hours * 3600)) / 60);
-                var time_diff_decimal;
-
-                // Activate this to display daily total hour in hours and minutes
-                /*
-                var time_diff_hours_display;
-                var time_diff_minutes_display;
-                
-                if (time_diff_hours < 10) { time_diff_hours_display = "0" + time_diff_hours; }
-                else {
-                    time_diff_hours_display = time_diff_hours;
-                }
-                if (time_diff_minutes < 10) { time_diff_minutes_display = "0" + time_diff_minutes; }
-                else {
-                    time_diff_minutes_display = time_diff_minutes;
-                }
-                jQuery("#total_d" + i).html(time_diff_hours_display + ":" + time_diff_minutes_display);
-                */
-
-                time_diff_decimal = time_diff / 3600;
-                time_diff_decimal = Math.round(time_diff_decimal * 100) / 100;
-                jQuery("#total_d" + i).html(time_diff_decimal.toFixed(2));
-
-
-                // Daily absence calculation
-
-                var dailyAbsence = 0;
-
-
-                switch (true) {
-                    case (time_diff_decimal == 0): dailyAbsence = 8; break;
-                    case (time_diff_decimal > 0 && time_diff_decimal <= 2): dailyAbsence = 6; break;
-                    case (time_diff_decimal > 2 && time_diff_decimal <= 4): dailyAbsence = 4; break;
-                    case (time_diff_decimal > 4 && time_diff_decimal <= 6): dailyAbsence = 2; break;
-                    case (time_diff_decimal > 6): dailyAbsence = 0; break;
-                }
-
-                var dailyDecimalAbsence = Math.max(0, (8 - time_diff_decimal));
-
-                // Eliminate time entry for July 30th and 31st, 2018
-
-                if (jQuery('#PeriodSelector').val() == "period1") {
-                    jQuery("#total_d10").html("");
-                    jQuery("#total_d11").html("");
-
-                    if (i == 10 || i == 11) {
-                        time_diff_hours = 0;
-                        time_diff_minutes = 0;
-                        dailyAbsence = 0;
-                        daily_scheduled = 0;
-                        dailyDecimalAbsence = 0;
-                    }
-                    else { daily_scheduled = 8; }
-                }
-
-                // Eliminate time entry for August 1,2,3,4,5 - 2019
-
-                if (jQuery('#PeriodSelector').val() == "period24") {
-                    jQuery("#total_d27").html("");
-                    jQuery("#total_d28").html("");
-                    jQuery("#total_d29").html("");
-                    jQuery("#total_d30").html("");
-                    if (i == 27 || i == 28 || i == 29 || i == 30) {
-                        time_diff_hours = 0;
-                        time_diff_minutes = 0;
-                        dailyAbsence = 0;
-                        daily_scheduled = 0;
-                        dailyDecimalAbsence = 0;
-                    }
-                    else { daily_scheduled = 8; }
-                }
-
-                // Eliminate absence calculated for Saturdays and Sundays
-
-                if (i == 15 || i == 16 || i == 22 || i == 23 || i == 29 || i == 30) { dailyAbsence = 0; dailyDecimalAbsence = 0; }
-
-                // Eliminate absence calculated for 3rd week on 2 week periods
-                // $(this).val() == 'period3' || $(this).val() == 'period9' || $(this).val() == 'period13' || $(this).val() == 'period21' || $(this).val() == 'period24'
-                if (jQuery('#PeriodSelector').val() != "period4" && jQuery('#PeriodSelector').val() != "period9" && jQuery('#PeriodSelector').val() != "period15" && jQuery('#PeriodSelector').val() != "period21" && jQuery('#PeriodSelector').val() != "period24") {
-
-                    if (i == 24 || i == 25 || i == 26 || i == 27 || i == 28) { dailyAbsence = 0; dailyDecimalAbsence = 0; }
-
-                }
-
-                // Eliminate absence calculated for marked holidays
-
-                if (i != 15 && i != 16 && i != 22 && i != 23 && i != 29 && i != 30) {
-                    var dayCounter = i - 10;
-
-                    var holiday_status_calc = document.getElementById('holiday' + dayCounter).checked;
-
-                    if (holiday_status_calc) {
-                        dailyAbsence = 0;
-                        dailyDecimalAbsence = 0;
-                    }
-                }
-
-
-
-                /* Week 1 totals calculation */
-                if (i <= 16) {
-
-                    weekly_total = weekly_total + time_diff_hours + ((time_diff_minutes) / 60);
-
-
-                    if (weekly_total < 40 && weekly_total >= 0) {
-                        week_1_reg = weekly_total;
-                        week_1_ot = 0;
-                        interimVar = weekly_total + holiday_total_hours;
-                        jQuery("#total_w1").html(interimVar.toFixed(2));
-                        jQuery("#overtime_w1").html("0.00");
-                    }
-                    else {
-                        if (weekly_total >= 40 && weekly_total > 0) {
-
-                            weekly_total_ot = weekly_total - 40;
-                            week_1_reg = 40;
-                            week_1_ot = weekly_total_ot;
-                            interimVar = 40 + holiday_total_hours;
-                            jQuery("#total_w1").html(interimVar.toFixed(0));
-                            jQuery("#overtime_w1").html(weekly_total_ot.toFixed(2));
-                        }
-                    }
-
-                    // Calculate week 1 scheduled hours
-                    if (i != 15 && i != 16 && i != 22 && i != 23 && i != 29 && i != 30) {
-                        holiday_status_calc = document.getElementById('holiday' + dayCounter).checked;
-
-                        if (!holiday_status_calc) {
-                            week_1_scheduled = week_1_scheduled + daily_scheduled;
-                        }
-
-
-                    }
-
-                    // Calculate Week 1 absence
-                    week_1_absence = week_1_absence + dailyAbsence;
-                    week_1_decimalAbsence = week_1_decimalAbsence + dailyDecimalAbsence;
-                }
-
-
-                /* Week 2 totals calculation */
-                if (i == 17) { weekly_total = 0; holiday_total_hours = 0; interimVar = 0; }
-                if (i > 16 && i <= 23) {
-
-                    weekly_total = weekly_total + time_diff_hours + ((time_diff_minutes) / 60);
-
-                    if (weekly_total < 40 && weekly_total >= 0) {
-                        week_2_reg = weekly_total;
-                        week_2_ot = 0;
-                        interimVar = weekly_total + holiday_total_hours;
-                        jQuery("#total_w2").html(interimVar.toFixed(2));
-                        jQuery("#overtime_w2").html("0.00");
-                    }
-                    else {
-                        if (weekly_total >= 40 && weekly_total > 0) {
-
-                            weekly_total_ot = weekly_total - 40;
-                            week_2_reg = 40;
-                            week_2_ot = weekly_total_ot;
-                            interimVar = 40 + holiday_total_hours;
-                            jQuery("#total_w2").html(interimVar.toFixed(0));
-                            jQuery("#overtime_w2").html(weekly_total_ot.toFixed(2));
-                        }
-                    }
-
-                    // Calculate week 2 scheduled hours
-                    if (i != 15 && i != 16 && i != 22 && i != 23 && i != 29 && i != 30) {
-                        holiday_status_calc = document.getElementById('holiday' + dayCounter).checked;
-
-                        if (!holiday_status_calc) {
-                            week_2_scheduled = week_2_scheduled + daily_scheduled;
-                        }
-                    }
-
-                    // Calculate Week 2 absence
-                    week_2_absence = week_2_absence + dailyAbsence;
-                    week_2_decimalAbsence = week_2_decimalAbsence + dailyDecimalAbsence;
-                }
-
-                /* Week 3 totals calculation */
-                if (i == 24) { weekly_total = 0; holiday_total_hours = 0; }
-                if (i > 23 && i <= 30) {
-
-                    weekly_total = weekly_total + time_diff_hours + ((time_diff_minutes) / 60);
-
-                    if (weekly_total < 40 && weekly_total >= 0) {
-                        week_3_reg = weekly_total;
-                        week_3_ot = 0;
-                        interimVar = weekly_total + holiday_total_hours;
-                        jQuery("#total_w3").html(interimVar.toFixed(2));
-                        jQuery("#overtime_w3").html("0.00");
-                    }
-                    else {
-                        if (weekly_total >= 40 && weekly_total > 0) {
-
-                            weekly_total_ot = weekly_total - 40;
-                            week_3_reg = 40;
-                            week_3_ot = weekly_total_ot;
-                            interimVar = 40 + holiday_total_hours;
-                            jQuery("#total_w3").html(interimVar.toFixed(0));
-                            jQuery("#overtime_w3").html(weekly_total_ot.toFixed(2));
-                        }
-                    }
-
-                    // Calculate week 3 scheduled hours
-                    if (i != 15 && i != 16 && i != 22 && i != 23 && i != 29 && i != 30) {
-                        holiday_status_calc = document.getElementById('holiday' + dayCounter).checked;
-
-                        if (!holiday_status_calc) {
-                            week_3_scheduled = week_3_scheduled + daily_scheduled;
-                        }
-                    }
-
-                    // Calculate Week 3 absence
-
-                    week_3_absence = week_3_absence + dailyAbsence;
-                    week_3_decimalAbsence = week_3_decimalAbsence + dailyDecimalAbsence;
-                }
-            } /* Iteration calculation ends here */
-
-            // Eliminate scheduled hours for 3rd week on 2 week periods
-            if (jQuery('#PeriodSelector').val() != "period4" && jQuery('#PeriodSelector').val() != "period9" && jQuery('#PeriodSelector').val() != "period15" && jQuery('#PeriodSelector').val() != "period21" && jQuery('#PeriodSelector').val() != "period24") {
-                week_3_scheduled = 0;
-            }
-
-            overall_total_reg = week_1_reg + week_2_reg + week_3_reg;
-            overall_total_ot = week_1_ot + week_2_ot + week_3_ot;
-            overall_total_absence = week_1_absence + week_2_absence + week_3_absence;
-
-            // Weekly unscheduled hour calculation
-            /* This is not to be activated
-            if (week_1_reg >= 40 && week_1_absence == 0) { week_1_decimalAbsence = 0; }
-            if (week_2_reg >= 40 && week_2_absence == 0) { week_2_decimalAbsence = 0; }
-            if (week_3_reg >= 40 && week_3_absence == 0) { week_3_decimalAbsence = 0; }
-            */
-
-            //Central office decided to use weekly method for unscheduled calculation on 03/05/2018. Therefore wee_1_absence is used instead of week_1_decimalAbsence.
-            week_1_unscheduled = Math.max(0, (week_1_reg - (week_1_scheduled - week_1_absence)));
-            week_2_unscheduled = Math.max(0, (week_2_reg - (week_2_scheduled - week_2_absence)));
-            week_3_unscheduled = Math.max(0, (week_3_reg - (week_3_scheduled - week_3_absence)));
-
-
-            overall_total_scheduled = week_1_scheduled + week_2_scheduled + week_3_scheduled;
-            overall_total_unscheduled = week_1_unscheduled + week_2_unscheduled + week_3_unscheduled;
-
-            console.log("Week 1 Absence: " + week_1_absence);
-            console.log("Week 1 Scheduled: " + week_1_scheduled);
-            console.log("Week 1 Unscheduled: " + week_1_unscheduled);
-
-            console.log("Week 2 Absence: " + week_2_absence);
-            console.log("Week 2 Scheduled: " + week_2_scheduled);
-            console.log("Week 2 Unscheduled: " + week_2_unscheduled);
-
-            console.log("Week 3 Absence: " + week_3_absence);
-            console.log("Week 3 Scheduled: " + week_3_scheduled);
-            console.log("Week 3 Unscheduled: " + week_3_unscheduled);
-            /*
-            if ((scheduledhour - overall_total_absence) > 0) {
-                if (overall_total_reg > (scheduledhour - overall_total_absence)) {
-                    unscheduledhour = overall_total_reg - (scheduledhour - overall_total_absence);
-                }
-                else {
-                    unscheduledhour = 0;
-                }
-            }
-            else {
-                unscheduledhour = 0;
-            }
-            */
-
-            jQuery("#total_regular").html(overall_total_reg.toFixed(2));
-            jQuery("#total_overtime").html(overall_total_ot.toFixed(2));
-            jQuery("#absence").html(overall_total_absence);
-            jQuery("#unscheduledhours").html(overall_total_unscheduled.toFixed(2));
-            jQuery('#scheduledhours').html(overall_total_scheduled);
-        }
-    </script>
-
-
-    <style type="text/css">
-        input[type=number]::-webkit-inner-spin-button,
-        input[type=number]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        body {
-            margin-top: 20pt;
-        }
-
-        /* Text rotation */
-
-        .rotate {
-            /* FF3.5+ */
-            -moz-transform: rotate(-90.0deg);
-            /* Opera 10.5 */
-            -o-transform: rotate(-90.0deg);
-            /* Saf3.1+, Chrome */
-            -webkit-transform: rotate(-90.0deg);
-            /* IE6,IE7 */
-            filter: progid: DXImageTransform.Microsoft.BasicImage(rotation=0.083);
-            /* IE8 */
-            -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083)";
-            /* Standard */
-            transform: rotate(-90.0deg);
-
-        }
-
-
-        .headercol1 {
-            font-family: Calibri;
-            font-size: 11pt;
-            padding-top: 2pt;
-            vertical-align: middle;
-            border-bottom: 2pt solid #000000;
-        }
-
-
-        .week-cells {
-            font-family: Calibri;
-            font-size: 11pt;
-            vertical-align: middle;
-            width: 65pt;
-            border: 1px solid black;
-            text-align: center;
-            padding: 0;
-            height: 12pt;
-        }
-
-        .footer-cells {
-            font-family: Calibri;
-            font-size: 11pt;
-            vertical-align: middle;
-            border: 1px solid black;
-            text-align: center;
-            padding: 0;
-            height: 12pt;
-        }
-
-        select:focus {
-            background-color: #ffffa0;
-        }
-
-        input:focus {
-            background-color: #faf0b7;
-        }
-
-        select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            text-overflow: '';
-            outline: 0px;
-            border: 0px;
-        }
-
-        @media print {
-            #PrintButton {
-                display: none;
-            }
-
-            #disclaimer {
-                display: none;
-            }
-
-            .checkboxes {
-                display: none;
-            }
-
-            .holidayWarning {
-                display: none;
-            }
-
-            #regularHoursDefLabel {
-                display: none;
-            }
-        }
-
-        @page {
-            margin: 10mm 15mm 10mm 15mm;
-            size: auto;
-            margin-bottom: 5mm;
-        }
-
-        .asterisks {
-            display: none;
-        }
-    </style>
-</head>
-
-
-<body>
-    <center>
-        <!-- HPS header -->
-        <div class="container col-lg-12 col-md-12">
-            <table style="width: 580pt;">
-                <tr>
-                    <td style="font-family: Calibri; font-size: 18pt; text-align: center;">
-                        <strong>HPS NonExempt Employee Time Sheet 2018-2019</strong>
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-
-        <!-- Info -->
-        <div class="container col-lg-12 col-md-12" style="padding-top: 10pt">
-            <table style="width: 580pt;">
-                <tr>
-                    <td class="headercol1" style="width: 150pt;">Campus</td>
-                    <td style="font-family: Calibri; font-size: 11pt; padding-left: 6pt;">
-                        <div>
-                            <select id="CampusSelector" style="border: 0px; outline: 0px; line-height: 11pt;">
-                                <option selected>Choose Campus</option>
-                                <option>Austin - District Office</option>
-                                <option>Austin - HSA</option>
-                                <option>Austin - HSAPf</option>
-                                <option>Austin - HSACP</option>
-                                <option>Austin - HSE</option>
-                                <option>Austin - HSI</option>
-                                <option>Austin - HSP</option>
-                                <option>Austin - HSS</option>
-                                <option>Beaumont - HSA</option>
-                                <option>Brownsville - HSA</option>
-                                <option>Brownsville - HSI</option>
-                                <option>Bryan - HSA</option>
-                                <option>Carrollton - HSA</option>
-                                <option>Carrollton - HSI</option>
-                                <option>Cedar Park - HSA</option>
-                                <option>Central Office</option>
-                                <option>Dallas - HS Business</option>
-                                <option>Dallas - HSA</option>
-                                <option>Dallas - HSA Elementary</option>
-                                <option>Dallas - HSA Middle</option>
-                                <option>Dallas - Nature</option>
-                                <option>Dallas - District Office</option>
-                                <option>El Paso - District Office</option>
-                                <option>El Paso - HAS</option>
-                                <option>El Paso - HSA</option>
-                                <option>El Paso - HSE</option>
-                                <option>El Paso - HSI</option>
-                                <option>Euless - HSA</option>
-                                <option>Euless - HSI</option>
-                                <option>Fort Worth - HSA</option>
-                                <option>Fort Worth - HSI</option>
-                                <option>Garland - HSA</option>
-                                <option>Garland - HSI</option>
-                                <option>Grand Prairie - HSA</option>
-                                <option>Houston - HS Achievement</option>
-                                <option>Houston - HS Advancement</option>
-                                <option>Houston - HS Art</option>
-                                <option>Houston - HS Discovery</option>
-                                <option>Houston - HS Endeavor</option>
-                                <option>Houston - HS Enrichment</option>
-                                <option>Houston - HS Excellence</option>
-                                <option>Houston - HS Exploration</option>
-                                <option>Houston - HS Ingenuity</option>
-                                <option>Houston - HS Technology</option>
-                                <option>Houston - HSA</option>
-                                <option>Houston - HSI</option>
-                                <option>Houston - HSS</option>
-                                <option>Houston - North District Office</option>
-                                <option>Houston - South District Office</option>
-                                <option>Houston - West District Office</option>
-                                <option>Katy - HSA</option>
-                                <option>Katy - HSI</option>
-                                <option>Laredo - HSA</option>
-                                <option>Laredo - HSE</option>
-                                <option>Laredo - HSI</option>
-                                <option>Lubbock - HSA</option>
-                                <option>Odessa - HSA</option>
-                                <option>Pflugerville - HSA</option>
-                                <option>Plano - HSA</option>
-                                <option>San Antonio - District Office</option>
-                                <option>San Antonio - HSA</option>
-                                <option>San Antonio - HSE</option>
-                                <option>San Antonio - HSI</option>
-                                <option>Sugar Land - HSA</option>
-                                <option>Sugar Land - HSE</option>
-                                <option>Sugar Land - HSI</option>
-                                <option>Waco - HSA</option>
-                                <option>Waco - HSI</option>
-                            </select>
-                        </div>
-                    </td>
-                    <td style="width: 80pt;"></td>
-                    <td class="headercol1" style="text-align: right; vertical-align: bottom; width: 150pt;">Position:</td>
-                    <td style="font-family: Calibri; font-size: 11pt;  padding-left: 10pt; margin-right: 0px;">
-                        <!-- <input type="text" id="position" placeholder="enter position" style="border: 0px;  width: 80pt; line-height: 11pt;" required> -->
-                        <select onchange="checkIntern()" id="position" style="border: 0px; outline: 0px; line-height: 11pt;">
-                            <option selected>Choose Position</option>
-                            <option>Attendance Clerk</option>
-                            <option>Crossing Guard</option>
-                            <option>Finance Clerk</option>
-                            <option>Gen. Maintenance</option>
-                            <option>Intern</option>
-                            <option>IT Specialist</option>
-                            <option>Legal Assistant</option>
-                            <option>Library Assistant</option>
-                            <option>Lunch Clerk</option>
-                            <option>Medical Assistant</option>
-                            <option>Payroll Clerk</option>
-                            <option>Registrar</option>
-                            <option>Secretary</option>
-                            <option>Support Specialist</option>
-                            <option>Teacher Assistant</option>
-                        </select>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="headercol1">Employee name</td>
-                    <td style="font-family: Calibri; font-size: 11pt; padding-left: 10pt;">
-                        <input type="text" id="fullname" placeholder="full name" style="border: 0px; line-height: 11pt;">
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-
-                <tr>
-                    <td class="headercol1">Pay Period</td>
-                    <td style="padding-left: 6pt; font-family: Calibri; font-size: 11pt;" autofocus class="header-cells">
-                        <div>
-                            <select id="PeriodSelector" style="border: 0px; outline: 0px;">
-                                <option id="period0" value="period0" selected> Choose Period</option>
-                                <option id="period1" value="period1">08/01/2018 - 08/11/2018</option>
-                                <option id="period2" value="period2">08/13/2018 - 08/25/2018</option>
-                                <option id="period3" value="period3">08/27/2018 - 09/08/2018</option>
-                                <option id="period4" value="period4">09/10/2018 - 09/29/2018</option>
-                                <option id="period5" value="period5">10/01/2018 - 10/13/2018</option>
-                                <option id="period6" value="period6">10/15/2018 - 10/27/2018</option>
-                                <option id="period7" value="period7">10/29/2018 - 11/10/2018</option>
-                                <option id="period8" value="period8">11/12/2018 - 11/24/2018</option>
-                                <option id="period9" value="period9">11/26/2018 - 12/15/2018</option>
-                                <option id="period10" value="period10">12/17/2018 - 12/29/2018</option>
-                                <option id="period11" value="period11">12/31/2018 - 01/12/2019</option>
-                                <option id="period12" value="period12">01/14/2019 - 01/26/2019</option>
-                                <option id="period13" value="period13">01/28/2019 - 02/09/2019</option>
-                                <option id="period14" value="period14">02/11/2019 - 02/23/2019</option>
-                                <option id="period15" value="period15">02/25/2019 - 03/16/2019</option>
-                                <option id="period16" value="period16">03/18/2019 - 03/30/2019</option>
-                                <option id="period17" value="period17">04/01/2019 - 04/13/2019</option>
-                                <option id="period18" value="period18">04/15/2019 - 04/27/2019</option>
-                                <option id="period19" value="period19">04/29/2019 - 05/11/2019</option>
-                                <option id="period20" value="period20">05/13/2019 - 05/25/2019</option>
-                                <option id="period21" value="period21">05/27/2019 - 06/15/2019</option>
-                                <option id="period22" value="period22">06/17/2019 - 06/29/2019</option>
-                                <option id="period23" value="period23">07/01/2019 - 07/13/2019</option>
-                                <option id="period24" value="period24">07/15/2019 - 07/31/2019</option>
-                            </select>
-                        </div>
-                    </td>
-                    <td></td>
-                    <td rowspan="2" style="text-align: right; vertical-align: bottom;" class="headercol1">
-                        Submission dealine for principal to Payroll Dept.:</td>
-                    <td></td>
-                </tr>
-
-                <tr>
-                    <td class="headercol1">Submission deadline to principal:</td>
-                    <td style="padding-left: 10pt; font-family: Calibri; font-size: 11pt;">
-                        <div id="submitdate1"></div>
-                    </td>
-                    <td></td>
-                    <td style="padding-left: 10pt; font-family: Calibri; font-size: 11pt;">
-                        <div id="submitdate2"></div>
-                    </td>
-                </tr>
-                <tr class="holidayWarning"></tr>
-                <tr class="holidayWarning">
-                    <td colspan="5" style="color: red; text-align: center; margin: 0; padding: 0;">
-                        <h4>Mark the checkbox for holidays for accurate calculation !!!</h4>
-                        <h5>
-                            <em>Scheduled, Unscheduled and Absence hours are not reported for interns. Those fields will not
-                                be displayed for interns.</em>
-                        </h5>
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-
-        <!-- Week 1 -->
-        <div id="week1" class="container col-lg-12 col-md-12" style="margin-top: 10pt;">
-
-            <table style="width: 580pt; border-collapse: collapse;">
-                <tbody>
-                    <tr>
-                        <td class="rotate" style="width: 40pt; border-top: 1px solid black; border-left: 1px solid black;" rowspan="10">
-                            <strong>Workweek&nbsp;1</strong>
-                        </td>
-                        <td class="week-cells" style="width: 140pt;">
-                            <strong>Date</strong>
-                        </td>
-                        <td class="week-cells">
-                            <strong>Hours Worked</strong>
-                        </td>
-                        <td class="week-cells">
-                            <strong>Time In</strong>
-                        </td>
-                        <td class="week-cells">
-                            <strong>Time Out</strong>
-                        </td>
-                        <td class="week-cells">
-                            <strong>Break</strong>
-                        </td>
-                        <td class="week-cells">
-                            <strong>Time In</strong>
-                        </td>
-                        <td class="week-cells">
-                            <strong>Time Out</strong>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <span id="day0"></span>
-                            <span class="asterisks" id="asterisk0">*</span>
-                            <span>
-                                <input type="checkbox" class="checkboxes" id="holiday0" title="Mark for holiday" onclick="addAsteriskToDate(0)">
-                            </span>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d10"></div>
-                        </td>
-                        <td class="week-cells" style="vertical-align: middle; padding: 0;">
-                            <input type="text" id="in_1_10" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_10" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d10"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_10" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_10" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <span id="day1"></span>
-                            <span class="asterisks" id="asterisk1">*</span>
-                            <span>
-                                <input type="checkbox" class="checkboxes" id="holiday1" title="Mark for holiday" onclick="addAsteriskToDate(1)">
-                            </span>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d11"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_11" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_11" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d11"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_11" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_11" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <span id="day2"></span>
-                            <span class="asterisks" id="asterisk2">*</span>
-                            <span>
-                                <input type="checkbox" class="checkboxes" id="holiday2" title="Mark for holiday" onclick="addAsteriskToDate(2)">
-                            </span>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d12"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_12" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_12" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d12"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_12" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_12" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <span id="day3"></span>
-                            <span class="asterisks" id="asterisk3">*</span>
-                            <span>
-                                <input type="checkbox" class="checkboxes" id="holiday3" title="Mark for holiday" onclick="addAsteriskToDate(3)">
-                            </span>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d13"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_13" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_13" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d13"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_13" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_13" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <span id="day4"></span>
-                            <span class="asterisks" id="asterisk4">*</span>
-                            <span>
-                                <input type="checkbox" class="checkboxes" id="holiday4" title="Mark for holiday" onclick="addAsteriskToDate(4)">
-                            </span>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d14"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_14" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_14" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d14"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_14" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_14" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <div id="day5"></div>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d15"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_15" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_15" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d15"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_15" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_15" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <div id="day6"></div>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d16"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_16" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_16" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d16"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_16" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_16" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="border-left: 0px;">&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 4pt;">
-                            <strong>Regular Hours</strong> (max 40):</td>
-                        <td class="week-cells">
-                            <div id="total_w1"></div>
-                        </td>
-                        <td>&nbsp;</td>
-                        <td colspan="3" class="week-cells" style="text-align: right; padding-right: 4pt;">
-                            <strong>Overtime Hours</strong> (after 40 hours):</td>
-                        <td class="week-cells">
-                            <div id="overtime_w1"></div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-        </div>
-
-
-        <!-- Week 2 -->
-        <div id="week2" class="container col-lg-12 col-md-12" style="margin-top: 15pt;">
-
-            <table style="width: 580pt; border-collapse: collapse;">
-                <tbody>
-                    <tr>
-                        <td class="rotate" style="width: 40pt; border-top: 1px solid black; border-left: 1px solid black;" rowspan="10">
-                            <strong>Workweek&nbsp;2</strong>
-                        </td>
-                        <td class="week-cells" style="width: 140pt;">
-                            <strong>Date</strong>
-                        </td>
-                        <td class="week-cells">
-                            <strong>Hours Worked</strong>
-                        </td>
-                        <td class="week-cells">
-                            <strong>Time In</strong>
-                        </td>
-                        <td class="week-cells">
-                            <strong>Time Out</strong>
-                        </td>
-                        <td class="week-cells">
-                            <strong>Break</strong>
-                        </td>
-                        <td class="week-cells">
-                            <strong>Time In</strong>
-                        </td>
-                        <td class="week-cells">
-                            <strong>Time Out</strong>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <span id="day7"></span>
-                            <span class="asterisks" id="asterisk7">*</span>
-                            <span>
-                                <input type="checkbox" class="checkboxes" id="holiday7" title="Mark for holiday" onclick="addAsteriskToDate(7)">
-                            </span>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d17"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_17" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_17" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d17"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_17" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_17" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <span id="day8"></span>
-                            <span class="asterisks" id="asterisk8">*</span>
-                            <span>
-                                <input type="checkbox" class="checkboxes" id="holiday8" title="Mark for holiday" onclick="addAsteriskToDate(8)">
-                            </span>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d18"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_18" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_18" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d18"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_18" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_18" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <span id="day9"></span>
-                            <span class="asterisks" id="asterisk9">*</span>
-                            <span>
-                                <input type="checkbox" class="checkboxes" id="holiday9" title="Mark for holiday" onclick="addAsteriskToDate(9)">
-                            </span>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d19"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_19" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_19" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d19"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_19" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_19" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <span id="day10"></span>
-                            <span class="asterisks" id="asterisk10">*</span>
-                            <span>
-                                <input type="checkbox" class="checkboxes" id="holiday10" title="Mark for holiday" onclick="addAsteriskToDate(10)">
-                            </span>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d20"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_20" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_20" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d20"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_20" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_20" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <span id="day11"></span>
-                            <span class="asterisks" id="asterisk11">*</span>
-                            <span>
-                                <input type="checkbox" class="checkboxes" id="holiday11" title="Mark for holiday" onclick="addAsteriskToDate(11)">
-                            </span>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d21"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_21" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_21" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d21"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_21" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_21" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <div id="day12"></div>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d22"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_22" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_22" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d22"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_22" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_22" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <div id="day13"></div>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d23"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_23" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_23" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d23"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_23" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_23" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 4pt;">
-                            <strong>Regular Hours</strong> (max 40):</td>
-                        <td class="week-cells">
-                            <div id="total_w2"></div>
-                        </td>
-                        <td>&nbsp;</td>
-                        <td colspan="3" class="week-cells" style="text-align: right; padding-right: 4pt;">
-                            <strong>Overtime Hours</strong> (after 40 hours):</td>
-                        <td class="week-cells">
-                            <div id="overtime_w2"></div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-        </div>
-
-
-        <!-- Week 3 -->
-        <div id="week3" class="container col-lg-12 col-md-12" style="margin-top: 15pt; display: none;">
-
-            <table style="width: 580pt; border-collapse: collapse;">
-                <tbody>
-                    <tr>
-                        <td class="rotate" style="width: 40pt; border-top: 1px solid black; border-left: 1px solid black;" rowspan="10">
-                            <strong>Workweek&nbsp;3</strong>
-                        </td>
-                        <td class="week-cells" style="width: 140pt;">
-                            <strong>Date</strong>
-                        </td>
-                        <td class="week-cells">
-                            <strong>Hours Worked</strong>
-                        </td>
-                        <td class="week-cells">
-                            <strong>Time In</strong>
-                        </td>
-                        <td class="week-cells">
-                            <strong>Time Out</strong>
-                        </td>
-                        <td class="week-cells">
-                            <strong>Break</strong>
-                        </td>
-                        <td class="week-cells">
-                            <strong>Time In</strong>
-                        </td>
-                        <td class="week-cells">
-                            <strong>Time Out</strong>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <span id="day14"></span>
-                            <span class="asterisks" id="asterisk14">*</span>
-                            <span>
-                                <input type="checkbox" class="checkboxes" id="holiday14" title="Mark for holiday" onclick="addAsteriskToDate(14)">
-                            </span>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d24"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_24" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_24" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d24"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_24" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_24" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <span id="day15"></span>
-                            <span class="asterisks" id="asterisk15">*</span>
-                            <span>
-                                <input type="checkbox" class="checkboxes" id="holiday15" title="Mark for holiday" onclick="addAsteriskToDate(15)">
-                            </span>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d25"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_25" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_25" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d25"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_25" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_25" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <span id="day16"></span>
-                            <span class="asterisks" id="asterisk16">*</span>
-                            <span>
-                                <input type="checkbox" class="checkboxes" id="holiday16" title="Mark for holiday" onclick="addAsteriskToDate(16)">
-                            </span>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d26"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_26" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_26" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d26"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_26" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_26" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <span id="day17"></span>
-                            <span class="asterisks" id="asterisk17">*</span>
-                            <span>
-                                <input type="checkbox" class="checkboxes" id="holiday17" title="Mark for holiday" onclick="addAsteriskToDate(17)">
-                            </span>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d27"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_27" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_27" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d27"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_27" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_27" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <span id="day18"></span>
-                            <span class="asterisks" id="asterisk18">*</span>
-                            <span>
-                                <input type="checkbox" class="checkboxes" id="holiday18" title="Mark for holiday" onclick="addAsteriskToDate(18)">
-                            </span>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d28"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_28" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_28" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d28"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_28" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_28" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <div id="day19"></div>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d29"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_29" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_29" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d29"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_29" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_29" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 3pt;">
-                            <div id="day20"></div>
-                        </td>
-                        <td class="week-cells">
-                            <div id="total_d30"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_1_30" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_1_30" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <div id="break_d30"></div>
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="in_2_30" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                        <td class="week-cells">
-                            <input type="text" id="out_2_30" onchange="calculate(this);" onblur="" class="timecard" size="7" style="line-height: 11pt; border: 0px; outline: 0px; text-align: center;">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td class="week-cells" style="text-align: right; padding-right: 4pt;">
-                            <strong>Regular Hours</strong> (max 40):</td>
-                        <td class="week-cells">
-                            <div id="total_w3"></div>
-                        </td>
-                        <td>&nbsp;</td>
-                        <td colspan="3" class="week-cells" style="text-align: right; padding-right: 4pt;">
-                            <strong>Overtime Hours</strong> (after 40 hours):</td>
-                        <td class="week-cells">
-                            <div id="overtime_w3"></div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-        </div>
-
-
-        <!-- Footer -->
-        <div class="container col-lg-12 col-md-12" style="margin-top: 10pt;">
-            <table style="width: 580pt;">
-                <tr>
-                    <td rowspan="5" style="width: 80pt;"></td>
-                    <td colspan="6" style="font-family: Calibri; font-size: 12pt; text-align: center; height: 20pt;">
-                        <strong>PAY PERIOD TOTALS TO REPORT to Payroll Department</strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="3" class="footer-cells" style="text-align: right; height: 18pt; padding-right: 4pt; width: 200pt;">
-                        <span id="regularHoursDefLabel" style="color: red;">
-                            <strong>Total&nbsp;</strong>
-                        </span>
-                        <strong>Regular Hours</strong>&nbsp;(for this period)
-                    </td>
-                    <td style="width: 50pt;" class="footer-cells">
-                        <div id="total_regular"></div>
-                    </td>
-                    <td class="footer-cells" style="text-align: right; padding-right: 4pt; width: 100pt;">
-                        <strong>Overtime Hours</strong>
-                    </td>
-                    <td class="footer-cells" style="width: 50pt;">
-                        <div id="total_overtime"></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="3" style="text-align: right; padding-right: 4pt; font-family: Calibri; font-size: 10pt; height: 15pt;">
-                        (Usually 80 hours, except holidays, 3‐week periods)</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td class="footer-cells" style="text-align: right; height: 18pt; padding-right: 4pt; width: 120pt;">
-                        <strong>Scheduled Work Hours</strong>
-                    </td>
-                    <td style="width: 50pt;" class="footer-cells">
-                        <!-- <input id="scheduledhours" style="border: 0; text-align: center;" type="number" min="0" max="120" onchange="scheduledhourlimiter();"
-                                required> -->
-                        <div id="scheduledhours"></div>
-                    </td>
-                    <td class="footer-cells" style="text-align: right; padding-right: 4pt; width: 180pt;">
-                        <strong>Unscheduled Regular Work Hours</strong>
-                    </td>
-                    <td class="footer-cells">
-                        <div id="unscheduledhours"></div>
-                    </td>
-                    <td class="footer-cells" style="text-align: right; padding-right: 4pt; width: 100pt;">
-                        <strong>Absence Hours</strong>
-                    </td>
-                    <td class="footer-cells">
-                        <span id="absence"></span>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="6" style="text-align: right; padding-right: 4pt; font-family: Calibri; font-size: 10pt; height: 15pt;">
-                        <strong>*</strong> marked days are holidays. Absence is not calculated for these days.
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-
-        <!-- Signatures -->
-        <div class="container col-lg-12 col-md-12" style="margin-top: 20pt;">
-            <table style="width: 580pt;">
-                <tr>
-                    <td style="text-align: left; height: 20pt; padding-left: 10pt; font-family: Calibri; font-size: 11pt;">
-                        <strong>Supervisor Signature:</strong>
-                    </td>
-                    <td></td>
-                    <td style="text-align: left; height: 20pt; padding-left: 10pt; font-family: Calibri; font-size: 11pt;">
-                        <strong>Employee Signature:</strong>
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- Disclaimer and print button -->
-        <div class="container" id="disclaimer">
-            <table>
-                <tr>
-                    <td style="vertical-align: middle; text-align: center;">
-                        <button type="button" id="PrintButton" onClick="check_before_print();" class="btn btn-primary">
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Print&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align: center; height: 20pt; font-family: Calibri; font-size: 10pt; color: dimgray; padding-top: 30pt;">
-                        Designed by Arslan Haytiyev
-                        <br /> This is not an official Harmony Public Schools document or page. Use at your own risk.
-                    </td>
-                </tr>
-            </table>
-
-        </div>
-    </center>
-
-
-    <script src="js/bootstrap.min.js"></script>
-</body>
-
+	<head>
+		<title>Strata by HTML5 UP</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Header -->
+			<header id="header">
+				<div class="inner">
+					<a href="#" class="image avatar"><img src="images/avatar.jpg" alt="" /></a>
+					<h1><strong>I am Strata</strong>, a super simple<br />
+					responsive site template freebie<br />
+					crafted by <a href="http://html5up.net">HTML5 UP</a>.</h1>
+				</div>
+			</header>
+
+		<!-- Main -->
+			<div id="main">
+
+				<!-- One -->
+					<section id="one">
+						<header class="major">
+							<h2>Ipsum lorem dolor aliquam ante commodo<br />
+							magna sed accumsan arcu neque.</h2>
+						</header>
+						<p>Accumsan orci faucibus id eu lorem semper. Eu ac iaculis ac nunc nisi lorem vulputate lorem neque cubilia ac in adipiscing in curae lobortis tortor primis integer massa adipiscing id nisi accumsan pellentesque commodo blandit enim arcu non at amet id arcu magna. Accumsan orci faucibus id eu lorem semper nunc nisi lorem vulputate lorem neque cubilia.</p>
+						<ul class="actions">
+							<li><a href="#" class="button">Learn More</a></li>
+						</ul>
+					</section>
+
+				<!-- Two -->
+					<section id="two">
+						<h2>Recent Work</h2>
+						<div class="row">
+							<article class="col-6 col-12-xsmall work-item">
+								<a href="images/fulls/01.jpg" class="image fit thumb"><img src="images/thumbs/01.jpg" alt="" /></a>
+								<h3>Magna sed consequat tempus</h3>
+								<p>Lorem ipsum dolor sit amet nisl sed nullam feugiat.</p>
+							</article>
+							<article class="col-6 col-12-xsmall work-item">
+								<a href="images/fulls/02.jpg" class="image fit thumb"><img src="images/thumbs/02.jpg" alt="" /></a>
+								<h3>Ultricies lacinia interdum</h3>
+								<p>Lorem ipsum dolor sit amet nisl sed nullam feugiat.</p>
+							</article>
+							<article class="col-6 col-12-xsmall work-item">
+								<a href="images/fulls/03.jpg" class="image fit thumb"><img src="images/thumbs/03.jpg" alt="" /></a>
+								<h3>Tortor metus commodo</h3>
+								<p>Lorem ipsum dolor sit amet nisl sed nullam feugiat.</p>
+							</article>
+							<article class="col-6 col-12-xsmall work-item">
+								<a href="images/fulls/04.jpg" class="image fit thumb"><img src="images/thumbs/04.jpg" alt="" /></a>
+								<h3>Quam neque phasellus</h3>
+								<p>Lorem ipsum dolor sit amet nisl sed nullam feugiat.</p>
+							</article>
+							<article class="col-6 col-12-xsmall work-item">
+								<a href="images/fulls/05.jpg" class="image fit thumb"><img src="images/thumbs/05.jpg" alt="" /></a>
+								<h3>Nunc enim commodo aliquet</h3>
+								<p>Lorem ipsum dolor sit amet nisl sed nullam feugiat.</p>
+							</article>
+							<article class="col-6 col-12-xsmall work-item">
+								<a href="images/fulls/06.jpg" class="image fit thumb"><img src="images/thumbs/06.jpg" alt="" /></a>
+								<h3>Risus ornare lacinia</h3>
+								<p>Lorem ipsum dolor sit amet nisl sed nullam feugiat.</p>
+							</article>
+						</div>
+						<ul class="actions">
+							<li><a href="#" class="button">Full Portfolio</a></li>
+						</ul>
+					</section>
+
+				<!-- Three -->
+					<section id="three">
+						<h2>Get In Touch</h2>
+						<p>Accumsan pellentesque commodo blandit enim arcu non at amet id arcu magna. Accumsan orci faucibus id eu lorem semper nunc nisi lorem vulputate lorem neque lorem ipsum dolor.</p>
+						<div class="row">
+							<div class="col-8 col-12-small">
+								<form method="post" action="#">
+									<div class="row gtr-uniform gtr-50">
+										<div class="col-6 col-12-xsmall"><input type="text" name="name" id="name" placeholder="Name" /></div>
+										<div class="col-6 col-12-xsmall"><input type="email" name="email" id="email" placeholder="Email" /></div>
+										<div class="col-12"><textarea name="message" id="message" placeholder="Message" rows="4"></textarea></div>
+									</div>
+								</form>
+								<ul class="actions">
+									<li><input type="submit" value="Send Message" /></li>
+								</ul>
+							</div>
+							<div class="col-4 col-12-small">
+								<ul class="labeled-icons">
+									<li>
+										<h3 class="icon solid fa-home"><span class="label">Address</span></h3>
+										1234 Somewhere Rd.<br />
+										Nashville, TN 00000<br />
+										United States
+									</li>
+									<li>
+										<h3 class="icon solid fa-mobile-alt"><span class="label">Phone</span></h3>
+										000-000-0000
+									</li>
+									<li>
+										<h3 class="icon solid fa-envelope"><span class="label">Email</span></h3>
+										<a href="#">hello@untitled.tld</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</section>
+
+				<!-- Four -->
+				<!--
+					<section id="four">
+						<h2>Elements</h2>
+
+						<section>
+							<h4>Text</h4>
+							<p>This is <b>bold</b> and this is <strong>strong</strong>. This is <i>italic</i> and this is <em>emphasized</em>.
+							This is <sup>superscript</sup> text and this is <sub>subscript</sub> text.
+							This is <u>underlined</u> and this is code: <code>for (;;) { ... }</code>. Finally, <a href="#">this is a link</a>.</p>
+							<hr />
+							<header>
+								<h4>Heading with a Subtitle</h4>
+								<p>Lorem ipsum dolor sit amet nullam id egestas urna aliquam</p>
+							</header>
+							<p>Nunc lacinia ante nunc ac lobortis. Interdum adipiscing gravida odio porttitor sem non mi integer non faucibus ornare mi ut ante amet placerat aliquet. Volutpat eu sed ante lacinia sapien lorem accumsan varius montes viverra nibh in adipiscing blandit tempus accumsan.</p>
+							<header>
+								<h5>Heading with a Subtitle</h5>
+								<p>Lorem ipsum dolor sit amet nullam id egestas urna aliquam</p>
+							</header>
+							<p>Nunc lacinia ante nunc ac lobortis. Interdum adipiscing gravida odio porttitor sem non mi integer non faucibus ornare mi ut ante amet placerat aliquet. Volutpat eu sed ante lacinia sapien lorem accumsan varius montes viverra nibh in adipiscing blandit tempus accumsan.</p>
+							<hr />
+							<h2>Heading Level 2</h2>
+							<h3>Heading Level 3</h3>
+							<h4>Heading Level 4</h4>
+							<h5>Heading Level 5</h5>
+							<h6>Heading Level 6</h6>
+							<hr />
+							<h5>Blockquote</h5>
+							<blockquote>Fringilla nisl. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan faucibus. Vestibulum ante ipsum primis in faucibus lorem ipsum dolor sit amet nullam adipiscing eu felis.</blockquote>
+							<h5>Preformatted</h5>
+							<pre><code>i = 0;
+
+while (!deck.isInOrder()) {
+print 'Iteration ' + i;
+deck.shuffle();
+i++;
+}
+
+print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
+						</section>
+
+						<section>
+							<h4>Lists</h4>
+							<div class="row">
+								<div class="col-6 col-12-xsmall">
+									<h5>Unordered</h5>
+									<ul>
+										<li>Dolor pulvinar etiam magna etiam.</li>
+										<li>Sagittis adipiscing lorem eleifend.</li>
+										<li>Felis enim feugiat dolore viverra.</li>
+									</ul>
+									<h5>Alternate</h5>
+									<ul class="alt">
+										<li>Dolor pulvinar etiam magna etiam.</li>
+										<li>Sagittis adipiscing lorem eleifend.</li>
+										<li>Felis enim feugiat dolore viverra.</li>
+									</ul>
+								</div>
+								<div class="col-6 col-12-xsmall">
+									<h5>Ordered</h5>
+									<ol>
+										<li>Dolor pulvinar etiam magna etiam.</li>
+										<li>Etiam vel felis at lorem sed viverra.</li>
+										<li>Felis enim feugiat dolore viverra.</li>
+										<li>Dolor pulvinar etiam magna etiam.</li>
+										<li>Etiam vel felis at lorem sed viverra.</li>
+										<li>Felis enim feugiat dolore viverra.</li>
+									</ol>
+									<h5>Icons</h5>
+									<ul class="icons">
+										<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+										<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
+										<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>
+										<li><a href="#" class="icon brands fa-github"><span class="label">Github</span></a></li>
+										<li><a href="#" class="icon brands fa-dribbble"><span class="label">Dribbble</span></a></li>
+										<li><a href="#" class="icon brands fa-tumblr"><span class="label">Tumblr</span></a></li>
+									</ul>
+								</div>
+							</div>
+							<h5>Actions</h5>
+							<ul class="actions">
+								<li><a href="#" class="button primary">Default</a></li>
+								<li><a href="#" class="button">Default</a></li>
+							</ul>
+							<ul class="actions small">
+								<li><a href="#" class="button primary small">Small</a></li>
+								<li><a href="#" class="button small">Small</a></li>
+							</ul>
+							<div class="row">
+								<div class="col-6 col-12-small">
+									<ul class="actions stacked">
+										<li><a href="#" class="button primary">Default</a></li>
+										<li><a href="#" class="button">Default</a></li>
+									</ul>
+								</div>
+								<div class="col-6 col-12-small">
+									<ul class="actions stacked">
+										<li><a href="#" class="button primary small">Small</a></li>
+										<li><a href="#" class="button small">Small</a></li>
+									</ul>
+								</div>
+								<div class="col-6 col-12-small">
+									<ul class="actions stacked">
+										<li><a href="#" class="button primary fit">Default</a></li>
+										<li><a href="#" class="button fit">Default</a></li>
+									</ul>
+								</div>
+								<div class="col-6 col-12-small">
+									<ul class="actions stacked">
+										<li><a href="#" class="button primary small fit">Small</a></li>
+										<li><a href="#" class="button small fit">Small</a></li>
+									</ul>
+								</div>
+							</div>
+						</section>
+
+						<section>
+							<h4>Table</h4>
+							<h5>Default</h5>
+							<div class="table-wrapper">
+								<table>
+									<thead>
+										<tr>
+											<th>Name</th>
+											<th>Description</th>
+											<th>Price</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>Item One</td>
+											<td>Ante turpis integer aliquet porttitor.</td>
+											<td>29.99</td>
+										</tr>
+										<tr>
+											<td>Item Two</td>
+											<td>Vis ac commodo adipiscing arcu aliquet.</td>
+											<td>19.99</td>
+										</tr>
+										<tr>
+											<td>Item Three</td>
+											<td> Morbi faucibus arcu accumsan lorem.</td>
+											<td>29.99</td>
+										</tr>
+										<tr>
+											<td>Item Four</td>
+											<td>Vitae integer tempus condimentum.</td>
+											<td>19.99</td>
+										</tr>
+										<tr>
+											<td>Item Five</td>
+											<td>Ante turpis integer aliquet porttitor.</td>
+											<td>29.99</td>
+										</tr>
+									</tbody>
+									<tfoot>
+										<tr>
+											<td colspan="2"></td>
+											<td>100.00</td>
+										</tr>
+									</tfoot>
+								</table>
+							</div>
+
+							<h5>Alternate</h5>
+							<div class="table-wrapper">
+								<table class="alt">
+									<thead>
+										<tr>
+											<th>Name</th>
+											<th>Description</th>
+											<th>Price</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>Item One</td>
+											<td>Ante turpis integer aliquet porttitor.</td>
+											<td>29.99</td>
+										</tr>
+										<tr>
+											<td>Item Two</td>
+											<td>Vis ac commodo adipiscing arcu aliquet.</td>
+											<td>19.99</td>
+										</tr>
+										<tr>
+											<td>Item Three</td>
+											<td> Morbi faucibus arcu accumsan lorem.</td>
+											<td>29.99</td>
+										</tr>
+										<tr>
+											<td>Item Four</td>
+											<td>Vitae integer tempus condimentum.</td>
+											<td>19.99</td>
+										</tr>
+										<tr>
+											<td>Item Five</td>
+											<td>Ante turpis integer aliquet porttitor.</td>
+											<td>29.99</td>
+										</tr>
+									</tbody>
+									<tfoot>
+										<tr>
+											<td colspan="2"></td>
+											<td>100.00</td>
+										</tr>
+									</tfoot>
+								</table>
+							</div>
+						</section>
+
+						<section>
+							<h4>Buttons</h4>
+							<ul class="actions">
+								<li><a href="#" class="button primary">Primary</a></li>
+								<li><a href="#" class="button">Default</a></li>
+							</ul>
+							<ul class="actions">
+								<li><a href="#" class="button large">Large</a></li>
+								<li><a href="#" class="button">Default</a></li>
+								<li><a href="#" class="button small">Small</a></li>
+							</ul>
+							<ul class="actions fit">
+								<li><a href="#" class="button primary fit">Fit</a></li>
+								<li><a href="#" class="button fit">Fit</a></li>
+							</ul>
+							<ul class="actions fit small">
+								<li><a href="#" class="button primary fit small">Fit + Small</a></li>
+								<li><a href="#" class="button fit small">Fit + Small</a></li>
+							</ul>
+							<ul class="actions">
+								<li><a href="#" class="button primary icon solid fa-download">Icon</a></li>
+								<li><a href="#" class="button icon solid fa-download">Icon</a></li>
+							</ul>
+							<ul class="actions">
+								<li><span class="button primary disabled">Primary</span></li>
+								<li><span class="button disabled">Default</span></li>
+							</ul>
+						</section>
+
+						<section>
+							<h4>Form</h4>
+							<form method="post" action="#">
+								<div class="row gtr-uniform gtr-50">
+									<div class="col-6 col-12-xsmall">
+										<input type="text" name="demo-name" id="demo-name" value="" placeholder="Name" />
+									</div>
+									<div class="col-6 col-12-xsmall">
+										<input type="email" name="demo-email" id="demo-email" value="" placeholder="Email" />
+									</div>
+									<div class="col-12">
+										<select name="demo-category" id="demo-category">
+											<option value="">- Category -</option>
+											<option value="1">Manufacturing</option>
+											<option value="1">Shipping</option>
+											<option value="1">Administration</option>
+											<option value="1">Human Resources</option>
+										</select>
+									</div>
+									<div class="col-4 col-12-small">
+										<input type="radio" id="demo-priority-low" name="demo-priority" checked>
+										<label for="demo-priority-low">Low Priority</label>
+									</div>
+									<div class="col-4 col-12-small">
+										<input type="radio" id="demo-priority-normal" name="demo-priority">
+										<label for="demo-priority-normal">Normal Priority</label>
+									</div>
+									<div class="col-4 col-12-small">
+										<input type="radio" id="demo-priority-high" name="demo-priority">
+										<label for="demo-priority-high">High Priority</label>
+									</div>
+									<div class="col-6 col-12-small">
+										<input type="checkbox" id="demo-copy" name="demo-copy">
+										<label for="demo-copy">Email me a copy of this message</label>
+									</div>
+									<div class="col-6 col-12-small">
+										<input type="checkbox" id="demo-human" name="demo-human" checked>
+										<label for="demo-human">I am a human and not a robot</label>
+									</div>
+									<div class="col-12">
+										<textarea name="demo-message" id="demo-message" placeholder="Enter your message" rows="6"></textarea>
+									</div>
+									<div class="col-12">
+										<ul class="actions">
+											<li><input type="submit" value="Send Message" class="primary" /></li>
+											<li><input type="reset" value="Reset" /></li>
+										</ul>
+									</div>
+								</div>
+							</form>
+						</section>
+
+						<section>
+							<h4>Image</h4>
+							<h5>Fit</h5>
+							<div class="box alt">
+								<div class="row gtr-50 gtr-uniform">
+									<div class="col-12"><span class="image fit"><img src="images/fulls/05.jpg" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/thumbs/01.jpg" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/thumbs/02.jpg" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/thumbs/03.jpg" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/thumbs/04.jpg" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/thumbs/05.jpg" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/thumbs/06.jpg" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/thumbs/03.jpg" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/thumbs/02.jpg" alt="" /></span></div>
+									<div class="col-4"><span class="image fit"><img src="images/thumbs/01.jpg" alt="" /></span></div>
+								</div>
+							</div>
+							<h5>Left &amp; Right</h5>
+							<p><span class="image left"><img src="images/avatar.jpg" alt="" /></span>Fringilla nisl. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent.</p>
+							<p><span class="image right"><img src="images/avatar.jpg" alt="" /></span>Fringilla nisl. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent tincidunt felis sagittis eget. tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan eu faucibus. Integer ac pellentesque praesent.</p>
+						</section>
+
+					</section>
+				-->
+
+			</div>
+
+		<!-- Footer -->
+			<footer id="footer">
+				<div class="inner">
+					<ul class="icons">
+						<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
+						<li><a href="#" class="icon brands fa-github"><span class="label">Github</span></a></li>
+						<li><a href="#" class="icon brands fa-dribbble"><span class="label">Dribbble</span></a></li>
+						<li><a href="#" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
+					</ul>
+					<ul class="copyright">
+						<li>&copy; Untitled</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					</ul>
+				</div>
+			</footer>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.poptrox.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
 </html>
